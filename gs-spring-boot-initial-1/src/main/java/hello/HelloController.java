@@ -25,7 +25,7 @@ public class HelloController {
 		return "Rest-REDIS!";
 	}
 
-	@RequestMapping(value = "/plan", method = RequestMethod.GET, consumes = "application/json")
+	@RequestMapping(value = "/plan", method = RequestMethod.POST, consumes = "application/json")
 	public String create(@RequestHeader HttpHeaders headers, @RequestBody String entity)
 			throws Exception {
 
