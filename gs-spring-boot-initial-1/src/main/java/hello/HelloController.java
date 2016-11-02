@@ -1,17 +1,9 @@
 package hello;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import redis.clients.jedis.Jedis;
-
-import java.text.ParseException;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.Produces;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import redis.clients.jedis.Jedis;
 
 @RestController
 public class HelloController {
@@ -41,29 +36,25 @@ public class HelloController {
 		System.out.println(jedis.get("Test123"));
 		return object.toString();
 	}
-	//display all data
-	@RequestMapping(value = "/plan", method= RequestMethod.GET)	
-	public String display(@RequestHeader HttpHeaders headers )
+	
+	//display id data of a user
+	@RequestMapping(value = "/{uriType}/{id}", method= RequestMethod.GET ,produces = "application/json")	
+	public ResponseEntity<Object> get(@RequestHeader  HttpHeaders headers, @PathVariable String uriType, @PathVariable String id)
 		throws Exception{
 		
+		HashMap hm= new HashMap ();
 		JSONParser parser = new JSONParser();
 		Jedis jedis = new Jedis("127.0.0.1");
-		JSONObject jsonobject = (JSONObject) parser.parse();
-		jedis.set("Test123", jsonobject.toJSONString());
-		System.out.println(jedis.get("Test123"));
-		return jsonobject.toJSONString();
-	}
-	//display all data of a user
-	@RequestMapping(value = "/plan/{id}", method= RequestMethod.GET)	
-	public String displayuser(@RequestHeader HttpHeaders headers )
-		throws Exception{
+		String result =jedis.get("Test"+id);
+		System.out.println("re:"+result);
+		String Result;
+		if (hm.containsKey(id))
+			Result = (jedis.get(id));
+		    else
+			Result = ("Key("+id+") doesn't exist");
+		HttpHeaders httpHeaders = new HttpHeaders();
+		return new ResponseEntity (Result, httpHeaders, org.springframework.http.HttpStatus.CREATED);
 		
-		JSONParser parser = new JSONParser();
-		Jedis jedis = new Jedis("127.0.0.1");
-		JSONObject jsonobject = (JSONObject) parser.parse();
-		jedis.set("Test123", jsonobject.toJSONString());
-		System.out.println(jedis.get("Test123"));
-		return jsonobject.toJSONString();
 	}
 
 }
